@@ -35,7 +35,7 @@ const Navbar = ({ keranjang, setKeranjang }) => {
           <div className="flex gap-5 items-center">
               <div className="relative">
                   {/* Shopping Cart Icon */}
-                  <FaBagShopping size={28} className="text-black" onClick={() => setKeranjang(!keranjang)} />
+                  <FaBagShopping size={28} className="text-black cursor-pointer" onClick={() => setKeranjang(!keranjang)} />
                   <div>
                       {/* Badge showing the number of items in the cart */}
                       <div className="absolute top-[-8px] left-[12px] h-6 w-6 flex items-center justify-center bg-red-700 border border-white rounded-full">

@@ -16,7 +16,7 @@ const Product = () => {
     const [keranjang, setKeranjang] = useState(false);
     const [product, setProduct] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [categories, setCategory] = useState("");
+    const [category, setCategory] = useState("");
     const [filterCategory, setFilterCategory] = useState([]);
     const [search, setSearch] = useState("");
     const [openSearch, setOpenSearch] = useState(false);
@@ -37,7 +37,7 @@ const Product = () => {
     // search filter untuk product
     const filteredProducts = product.filter(products => {
         return products.name.toLowerCase().includes(search.toLowerCase()) &&
-        (categories ? products.categories?.name === categories : true);
+        (category ? products.category_id  === category.id : true);
     })
 
     return(
@@ -68,10 +68,11 @@ const Product = () => {
                      <div className="flex flex-col gap-2 mt-2">
                          {filterCategory.map((categories, index) => (
                             <label key={index}>
-                                 <input type="checkbox" className="accent-pink-500 mr-2"
+                                 <input type="radio" className="accent-pink-500 mr-2"
                                         name="categories"
-                                        value={categories.name}
-                                        onChange={(e) => setCategory(e.target.value)} />{categories.name}
+                                        value={categories.id}
+                                        checked={category?.id === categories.id}
+                                        onChange={() => setCategory(categories)} />{categories.name}
                              </label>
                         ))}
                         <button
@@ -98,11 +99,12 @@ const Product = () => {
                          {filterCategory.map((categories, index) => (
                                 <label key={index}>
                                      <input
-                                        type="checkbox"
+                                        type="radio"
                                         className="accent-pink-500 mr-2"
                                         name="categories"
-                                        value={categories.name}
-                                        onChange={(e) => setCategory(e.target.value)}
+                                        value={categories.id}
+                                        checked={category?.id === categories.id}
+                                        onChange={() => setCategory(categories)}
                                     /> {categories.name}
                                  </label>
                             ))}
@@ -139,7 +141,7 @@ const Product = () => {
                      </div>
                      {/* keranjang */}
                      {keranjang && (
-                        <div className="fixed z-[999] bg-white shadow-2xl h-[100vh] md:w-[50%] p-5 top-0 right-0">
+                        <div className="fixed z-[999] top-0 right-0">
                              <Cart products={product} setKeranjang={setKeranjang}/>
                          </div>
                     )}

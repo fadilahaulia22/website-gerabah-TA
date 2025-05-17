@@ -14,6 +14,7 @@ import DashboardPemilik from "./pages/dashboardPemilik/DashboardPemilik";
 import ProductManagement from "./pages/dashboardPemilik/ProductManagement";
 import UpdateProduct from "./pages/dashboardPemilik/UpdateProduct";
 import AddProduct from "./pages/dashboardPemilik/AddProduct";
+import DetilProductPage from "./pages/DetilProductPage";
 
 
 const router = createBrowserRouter([
@@ -53,11 +54,10 @@ const router = createBrowserRouter([
     path: "/product-management",
     element: <ProductManagement />
   },
-  
-  // {
-  //   path: "/products/:id",
-  //   element:<DetilProductPage/>
-  // }
+  {
+    path: "/products/:id",
+    element:<DetilProductPage/>
+  }
 ]);
 
 ReactDOM.createRoot(document.getElementById("root")).render(
