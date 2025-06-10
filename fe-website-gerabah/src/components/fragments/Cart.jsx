@@ -9,6 +9,7 @@ import {
   removeItem,
 } from "../../redux/slice/cartSlice";
 import "react-toastify/dist/ReactToastify.css";
+import { removeItemDB, updateCartItemDB } from "../../services/cartService";
 
 const Cart = ({ products, setKeranjang }) => {
   const cart = useSelector((state) => state.cart.data);
@@ -67,14 +68,28 @@ const Cart = ({ products, setKeranjang }) => {
                   <div className="flex items-center gap-2">
                     <button
                       className="w-7 h-7 text-sm border rounded hover:bg-gray-100"
-                      onClick={() => dispatch(decreesItem({ id: item.id }))}
+                      onClick={async () =>{
+                        const newQty = item.qty - 1;
+                        if (newQty >= 1) {
+                          await updateCartItemDB(item.id, newQty);
+                          dispatch(decreesItem({ id: item.id }));
+                        } else {
+                          await removeItemDB(item.id);
+                          dispatch(removeItem({ id: item.id }));
+                        }
+                      }}
                     >
                       −
                     </button>
                     <span className="px-2">{item.qty}</span>
                     <button
                       className="w-7 h-7 text-sm border rounded hover:bg-gray-100"
-                      onClick={() => dispatch(increesItem({ id: item.id }))}
+                      // onClick={() => dispatch(increesItem({ id: item.id }))}
+                      onClick={async() =>{
+                        const newQty = item.qty + 1;
+                        await updateCartItemDB(item.id, newQty);
+                        dispatch(increesItem({ id: item.id }));
+                      }}
                     >
                       +
                     </button>
@@ -83,12 +98,17 @@ const Cart = ({ products, setKeranjang }) => {
                     <span className="text-gray-600">
                       Rp{(product.price * item.qty).toLocaleString()}
                     </span>
-                    <button
-                      onClick={() =>
-                        dispatch(removeItem({ id: item.id, qty: item.qty }))
-                      }
-                      className="text-red-500 hover:text-red-700"
-                    >
+                  <button
+                     onClick={async () => {
+                  try {
+                    await removeItemDB(item.id); // hapus dari DB
+                    dispatch(removeItem({ id: item.id, qty: item.qty })); // hapus dari redux
+                  } catch (err) {
+                    console.error("Gagal hapus dari keranjang:", err);
+                  }
+                }}
+                className="text-red-500 hover:text-red-700"
+              >
                       <MdOutlineDeleteOutline size={18} />
                     </button>
                   </div>

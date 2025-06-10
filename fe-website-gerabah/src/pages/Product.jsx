@@ -7,8 +7,8 @@ import Cart from "../components/Fragments/Cart";
 import SkeletonCard from "../components/Fragments/SkeletonCard";
 import animate from "../assets/empty.gif"
 import { CiSearch } from "react-icons/ci";
-import Navbar from "../components/layouts/Navbar";
 import CardProduct from "../components/fragments/CardProduct";
+import NavbarHome from "../components/layouts/NavbarHome";
 
 const Product = () => {
     
@@ -42,7 +42,8 @@ const Product = () => {
 
     return(
         <div className="font-primary">
-             <Navbar keranjang={keranjang} setKeranjang={setKeranjang}/>
+
+             <NavbarHome keranjang={keranjang} setKeranjang={setKeranjang}/>
              <img className="w-full mt-[100px] h-[500px] bg-cover object-cover bg-center mx-auto "
                 src={hero} alt="banner" />
 

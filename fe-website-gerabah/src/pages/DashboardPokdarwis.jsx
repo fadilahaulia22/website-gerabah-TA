@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 
-// Contoh data simulasi booking kunjungan
 const dummyKunjungan = [
   {
     id: 1,

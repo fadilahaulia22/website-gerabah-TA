@@ -70,7 +70,7 @@ const FormRegister = () => {
 
             if (response.ok) {
                 // Redirect to login page after successful registration
-                navigate("/");
+                navigate("/login");
             } else {
                 const errorData = await response.json();
                 alert(errorData.message || "Registration failed!");

@@ -1,2 +1,8 @@
 /* tailwind css */
 @import "tailwindcss";
+
+.booked-date {
+  background: rgb(207, 138, 11) !important;
+  color: white !important;
+  border-radius: 60%;
+}

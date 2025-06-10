@@ -15,15 +15,25 @@ import ProductManagement from "./pages/dashboardPemilik/ProductManagement";
 import UpdateProduct from "./pages/dashboardPemilik/UpdateProduct";
 import AddProduct from "./pages/dashboardPemilik/AddProduct";
 import DetilProductPage from "./pages/DetilProductPage";
+import HomePage from "./pages/HomePage";
+import BookingPage from "./pages/booking/BookingPage";
 
 
 const router = createBrowserRouter([
+  {
+    path: "/",
+    element: <HomePage />
+  },
+  {
+    path: "/booking-kunjungan", 
+    element: <BookingPage />
+  },
   {
     path: "/error",
     errorElement: <ErrorPage />,
   },
   {
-    path: "/",
+    path: "/login",
     element: <Login />,
   },
   {

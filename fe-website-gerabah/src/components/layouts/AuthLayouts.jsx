@@ -29,7 +29,7 @@ const Navigation = ({type}) => {
         return(
             <p className="text-sm text-center w-full my-3">
                 Already have an account?
-                <Link to="/" className="font-bold">Login</Link>
+                <Link to="/login" className="font-bold">Login</Link>
             </p>
         )
     }

@@ -6,17 +6,38 @@ import Button from "../components/elements/Button";
 import CardProduct from "../components/fragments/CardProduct";
 import { getDetilProduct, getProducts } from "../services/product.services";
 import { addToCart } from "../redux/slice/cartSlice";
-import Navbar from "../components/layouts/Navbar";
 import Cart from "../components/Fragments/Cart";
+import NavbarHome from "../components/layouts/NavbarHome";
+import useLogin from "../hooks/useLogin";
+import { addToCartDB } from "../services/cartService";
 
 const DetilProductPage = () => {
   const { id } = useParams();
   const dispatch = useDispatch();
+  const username = useLogin();
 
   const [keranjang, setKeranjang] = useState(false);
   const [product, setProduct] = useState(null);
+  const [allProducts, setAllProducts] = useState([]);
   const [relatedProducts, setRelatedProducts] = useState([]);
   const [rating, setRating] = useState(0);
+  const handleAddToCart = async () => {
+      if (!username) {
+        // Jika belum login, redirect ke halaman login
+        window.location.href = "/login";
+        return;
+      }
+  
+      try {
+        // Tambah ke database via API
+        await addToCartDB(id, 1);
+        // Tambah ke Redux store agar muncul di UI
+        dispatch(addToCart({ id, qty: 1 }));
+      } catch (error) {
+        console.error("Gagal menambahkan ke keranjang:", error);
+        alert("Gagal menambahkan ke keranjang.");
+      }
+    };
 
   useEffect(() => {
     // Ambil detail produk berdasarkan id
@@ -29,6 +50,7 @@ const DetilProductPage = () => {
           (item) => item.category_id === data.category_id && item.id !== data.id
         );
         setRelatedProducts(filtered);
+        setAllProducts(all);
       });
     });
   }, [id]);
@@ -43,12 +65,12 @@ const DetilProductPage = () => {
 
   return (
     <>
-    <Navbar keranjang={keranjang} setKeranjang={setKeranjang}/>
+    <NavbarHome keranjang={keranjang} setKeranjang={setKeranjang}/>
 
     {/* keranjang */}
     {keranjang && (
         <div className="fixed z-[999] top-0 right-0">
-            <Cart products={product} setKeranjang={setKeranjang}/>
+            <Cart products={allProducts} setKeranjang={setKeranjang}/>
         </div>
     )}
 
@@ -88,10 +110,11 @@ const DetilProductPage = () => {
           </div>
           <div className="flex flex-col md:flex-row gap-3 mt-6">
             <Button
-              classname="bg-pink-600 w-full md:w-[40%]"
-              onClick={() => dispatch(addToCart({ id: product.id, qty: 1 }))}
+              classname="items-center justify-between bg-black text-xs md:text-sm w-full md:w-[40%]"
+              onClick={handleAddToCart}
             >
-              Masukkan Keranjang
+              {/* <CiShoppingCart size={20} /> */}
+              Add to cart
             </Button>
             <Link to={`/checkout/${product.id}`} className="w-full md:w-[40%]">
               <Button classname="bg-green-600 w-full">Beli Sekarang</Button>
