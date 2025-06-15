@@ -1,8 +1,5 @@
 import express from "express";
 import cors from "cors";
-// import argon2 from "argon2";
-// import jwt from "jsonwebtoken";
-// import multer from "multer";
 import path from "path";
 import { pool } from "../database.js";
 import { fileURLToPath } from "url";
@@ -14,6 +11,10 @@ import categoryRoutes from "./routes/categoryRoutes.js";
 import productRoutes from "./routes/productRoutes.js";
 import visitRoutes from "./routes/visitRoutes.js";
 import cartRoutes from "./routes/cartRoutes.js";
+import orderRoutes from "./routes/orderRoutes.js";
+import paymentRoutes from "./routes/paymentRoutes.js";
+import orderItemRoutes from "./routes/orderItemRoutes.js";
+import reviewRoutes from "./routes/reviewRoutes.js";
 
 dotenv.config();
 
@@ -40,6 +41,11 @@ app.use("/api/products/categories", categoryRoutes);
 app.use("/api/products", productRoutes);
 app.use("/api/visits", visitRoutes);
 app.use("/api/cart", cartRoutes); 
+app.use("/api/orders", orderRoutes);
+app.use("/api/payments", paymentRoutes);
+app.use("/api/order-items", orderItemRoutes);
+app.use("/api", reviewRoutes);
+
 
 
 

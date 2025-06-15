@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { getUsername } from "../services/auth.service";
 
 const useLogin = () =>{
     // const [username, setUserName] = useState("")
@@ -8,10 +7,16 @@ const useLogin = () =>{
     useEffect (() => {
         // Untuk Mendapatkan token dari local storage
         const token = localStorage.getItem("token");
-        if(token){
-            setUserName(getUsername(token));
+        const user = JSON.parse(localStorage.getItem("user"));
+
+        if(token && user?.id) {
+            setUserName({
+            id: user.id,
+            username: user.username,
+            role: user.role,
+            });
+            // setUserName(getUsername(token));
         }else {
-            // window.location.href = "/login"
             setUserName(null);
         }
     },[]);

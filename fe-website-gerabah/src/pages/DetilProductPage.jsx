@@ -22,6 +22,8 @@ const DetilProductPage = () => {
   const [relatedProducts, setRelatedProducts] = useState([]);
   const [rating, setRating] = useState(0);
   const handleAddToCart = async () => {
+    if (!product) return;
+
       if (!username) {
         // Jika belum login, redirect ke halaman login
         window.location.href = "/login";
@@ -32,7 +34,7 @@ const DetilProductPage = () => {
         // Tambah ke database via API
         await addToCartDB(id, 1);
         // Tambah ke Redux store agar muncul di UI
-        dispatch(addToCart({ id, qty: 1 }));
+        dispatch(addToCart({ id: product.id, qty: 1 }));
       } catch (error) {
         console.error("Gagal menambahkan ke keranjang:", error);
         alert("Gagal menambahkan ke keranjang.");
@@ -46,11 +48,11 @@ const DetilProductPage = () => {
 
       // Ambil produk lain dengan kategori yang sama
       getProducts((all) => {
+        setAllProducts(all);
         const filtered = all.filter(
           (item) => item.category_id === data.category_id && item.id !== data.id
         );
         setRelatedProducts(filtered);
-        setAllProducts(all);
       });
     });
   }, [id]);
@@ -117,7 +119,7 @@ const DetilProductPage = () => {
               Add to cart
             </Button>
             <Link to={`/checkout/${product.id}`} className="w-full md:w-[40%]">
-              <Button classname="bg-green-600 w-full">Beli Sekarang</Button>
+              <Button classname="bg-green-600 w-full">Checkout</Button>
             </Link>
           </div>
         </div>

@@ -17,6 +17,10 @@ import AddProduct from "./pages/dashboardPemilik/AddProduct";
 import DetilProductPage from "./pages/DetilProductPage";
 import HomePage from "./pages/HomePage";
 import BookingPage from "./pages/booking/BookingPage";
+import Galery from "./pages/Galery";
+import CheckoutPage from "./pages/checkout/CheckoutPage";
+import OrdersPage from "./pages/Order/OrderPAge";
+import OrderDetailPage from "./pages/Order/OrderDetailPage";
 
 
 const router = createBrowserRouter([
@@ -67,6 +71,26 @@ const router = createBrowserRouter([
   {
     path: "/products/:id",
     element:<DetilProductPage/>
+  },
+  {
+    path: "/galery",
+    element:<Galery/>
+  },
+  {
+    path: "/checkout/:id",
+    element: <CheckoutPage/>
+  },
+  {
+    path: "/checkout",
+    element: <CheckoutPage />,
+  },
+  {
+    path: "/orders",
+    element: <OrdersPage/>
+  },
+  {
+    path: "/orders/:id",
+    element: <OrderDetailPage/>
   }
 ]);
 

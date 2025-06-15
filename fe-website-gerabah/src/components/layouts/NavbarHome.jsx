@@ -2,16 +2,39 @@ import useLogin from "../../hooks/useLogin";
 import Button from "../elements/Button";
 import { FaBagShopping } from "react-icons/fa6";
 import { FaUser } from "react-icons/fa6";
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
 import { fetchCart } from "../../services/cartService";
 import { resetCart, setCart } from "../../redux/slice/cartSlice";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
+
+const DropdownMenu = ({ onLogout }) => {
+  const navigate = useNavigate();
+  return (
+    <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded shadow-md z-50">
+      <button
+        onClick={() => navigate("/orders")}
+        className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+      >
+        Riwayat Order
+      </button>
+      <button
+        onClick={onLogout}
+        className="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100"
+      >
+        Logout
+      </button>
+    </div>
+  );
+};
 
 const NavbarHome = ({ keranjang, setKeranjang }) => {
   const cart = useSelector((state) => state.cart.data);
   const [totalCart, setTotalCart] = useState(0);
+
+  const [showDropdown, setShowDropdown] = useState(false);
+  const dropdownRef = useRef();
 
   const username = useLogin();
   const dispatch = useDispatch();
@@ -33,17 +56,25 @@ const NavbarHome = ({ keranjang, setKeranjang }) => {
   }, [username, dispatch]);
 
 
-  // const handleLogout = () => {
-  //   localStorage.removeItem("token");
-  //   localStorage.removeItem("cart");
-  //   dispatch({type: "cart/clearCart"});
-  //   window.location.href = "/";
-  // };
+  useEffect(() => {
+  const handleClickOutside = (event) => {
+    if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+      setShowDropdown(false);
+    }
+  };
+
+  document.addEventListener("mousedown", handleClickOutside);
+  return () => document.removeEventListener("mousedown", handleClickOutside);
+}, []);
+
+
 
   const handleLogout = () => {
-  dispatch(resetCart());
-  localStorage.removeItem("token");
-  window.location.href = "/";
+    dispatch(resetCart());
+    localStorage.removeItem("token");
+    localStorage.removeItem("user_id"); 
+    localStorage.removeItem("user");
+    window.location.href = "/";
   };
 
   if (username === undefined){
@@ -65,7 +96,7 @@ const NavbarHome = ({ keranjang, setKeranjang }) => {
 
         {/* Menu links */}
         <div className="hidden md:flex gap-6 text-sm font-medium text-gray-700">
-          <Link to="/galeri" className="hover:text-orange-500 transition">Lihat Galeri</Link>
+          <Link to="/galery" className="hover:text-orange-500 transition">Lihat Galeri</Link>
           <Link to="/products" className="hover:text-orange-500 transition">Produk</Link>
           <Link to="/booking-kunjungan" className="hover:text-orange-500 transition">Edukasi</Link>
         </div>
@@ -86,12 +117,21 @@ const NavbarHome = ({ keranjang, setKeranjang }) => {
           {username ? (
             <div className="flex items-center gap-3">
               <div className="flex items-center gap-2 text-gray-700">
-                <FaUser size={20} />
-                <span className="text-sm font-medium"> Hallo{username}</span>
+                <div className="relative" ref={dropdownRef}>
+                  <div
+                    className="flex items-center gap-2 text-gray-700 hover:text-orange-600 transition"
+                        onClick={() => setShowDropdown(!showDropdown)}
+                        title="Lihat Opsi"
+                  >
+                    <FaUser size={20} />
+                    <span className="text-sm font-medium"> Hallo{username.username}</span>
+                  </div>
+                  {showDropdown && <DropdownMenu onLogout={handleLogout} />}
               </div>
-              <Button classname="bg-red-600 text-white text-sm px-3 py-1" onClick={handleLogout}>
+              </div>
+              {/* <Button classname="bg-red-600 text-white text-sm px-3 py-1" onClick={handleLogout}>
                 Logout
-              </Button>
+              </Button> */}
             </div>
           ) : (
             <div className="flex gap-3">

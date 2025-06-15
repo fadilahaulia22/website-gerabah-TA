@@ -3,8 +3,8 @@ import { createSlice } from "@reduxjs/toolkit";
 const cartSlice = createSlice({
     name:"cart",
     initialState: {
-        data: [],
-        // JSON.parse(localStorage.getItem("cart")) || []
+        // data: [],
+        data: JSON.parse(localStorage.getItem("cart")) || []
     },
     reducers:{
 
@@ -17,6 +17,7 @@ const cartSlice = createSlice({
             }else{
                 state.data.push(action.payload)
             }
+                localStorage.setItem("cart", JSON.stringify(state.data)); 
         },
         // to minus products from cart
         decreesItem: (state, action)=> {

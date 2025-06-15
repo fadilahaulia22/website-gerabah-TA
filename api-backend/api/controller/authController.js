@@ -18,6 +18,7 @@ export const login = async (req, res) => {
                 message: "Login berhasil.",
                 username:user.username,
                 role:user.role,
+                id: user.id,
               });
             } else {
               res.status(401).json({ error: "Kata sandi salah" });

@@ -24,14 +24,14 @@ const FormLogin = () => {
         };
         login(data,(status,res)=>{
             if(status){
-                // const { token, user } = res;
-                const { token, username, role } = res;
+                const { token, id, username, role } = res;
 
-                const user = { username, role }
 
                 // Simpan token dan info user ke localStorage
                 localStorage.setItem("token", token);
-                localStorage.setItem("user", JSON.stringify(user));
+                // localStorage.setItem("user", JSON.stringify(user));
+                localStorage.setItem("user", JSON.stringify({ id, username, role }));
+                localStorage.setItem("user_id", id);
 
                 // const role = user.role?.toLowerCase();
 

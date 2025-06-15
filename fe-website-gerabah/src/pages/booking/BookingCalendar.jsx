@@ -188,7 +188,6 @@ const isTimeSlotTaken = (date, time) => {
 
   return (
     <>
-      {/* <HeaderBooking /> */}
       <NavbarHome />
 
       <div className="min-h-screen bg-[#FFF7F0] pt-24 px-4 sm:px-8">
