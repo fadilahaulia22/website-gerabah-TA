@@ -14,7 +14,7 @@ const visitRoutes = express.Router();
 
 // Kunjungan
 visitRoutes.post("/", optionalAuthMiddleware, createVisit);
-visitRoutes.get("/", authenticateToken, getAllVisits);
+visitRoutes.get("/getVisit", authenticateToken, getAllVisits);
 visitRoutes.put("/payment-status/:id", authenticateToken, updatePaymentStatus);
 
 // Pembayaran kunjungan

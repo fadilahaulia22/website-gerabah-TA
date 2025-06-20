@@ -44,8 +44,16 @@ const FormLogin = () => {
                 }
 
             }else{
-                 setLoginFail(res?.response?.data || "Login gagal.");
-                 console.error(res?.response?.data);
+                //  setLoginFail(res?.response?.data || "Login gagal.");
+                //  console.error(res?.response?.data);
+                const errorData = res?.response?.data;
+                const errorMessage =
+                    typeof errorData === "string"
+                        ? errorData
+                        : errorData?.error || errorData?.message || "Login gagal.";
+
+                setLoginFail(errorMessage);
+                console.error("Login gagal:", errorMessage);
             }
         });
     };

@@ -19,22 +19,33 @@ import HomePage from "./pages/HomePage";
 import BookingPage from "./pages/booking/BookingPage";
 import Galery from "./pages/Galery";
 import CheckoutPage from "./pages/checkout/CheckoutPage";
-import OrdersPage from "./pages/Order/OrderPAge";
+import OrdersPage from "./pages/Order/OrderPage";
 import OrderDetailPage from "./pages/Order/OrderDetailPage";
+import AdminCustomOrders from "./pages/dashboardPemilik/orderCustom/AdminCustomOrders ";
+import AppLayout from "./components/layouts/AppLayout.jsx";
 
 
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <HomePage />
-  },
-  {
-    path: "/booking-kunjungan", 
-    element: <BookingPage />
-  },
-  {
-    path: "/error",
-    errorElement: <ErrorPage />,
+    element: <AppLayout />,
+    children: [
+      { index: true, element: <HomePage /> },
+      { path: "booking-kunjungan", element: <BookingPage /> },
+      { path: "products", element: <Product /> },
+      { path: "products/:id", element: <DetilProductPage /> },
+      { path: "galery", element: <Galery /> },
+      { path: "checkout", element: <CheckoutPage /> },
+      { path: "checkout/:id", element: <CheckoutPage /> },
+      { path: "orders", element: <OrdersPage /> },
+      { path: "orders/:id", element: <OrderDetailPage /> },
+      { path: "dashboard-pemilik", element: <DashboardPemilik /> },
+      { path: "dashboard-pokdarwis", element: <DashboardPokdarwis /> },
+      { path: "add-product", element: <AddProduct /> },
+      { path: "update-product/:id", element: <UpdateProduct /> },
+      { path: "product-management", element: <ProductManagement /> },
+      { path: "custom-orders", element: <AdminCustomOrders /> },
+    ],
   },
   {
     path: "/login",
@@ -45,53 +56,9 @@ const router = createBrowserRouter([
     element: <Register />,
   },
   {
-    path: "/products",
-    element: <Product />,
+    path: "*",
+    element: <ErrorPage />,
   },
-  {
-    path: "/dashboard-pemilik",
-    element: <DashboardPemilik />,
-  },
-  {
-    path: "/dashboard-pokdarwis",
-    element: <DashboardPokdarwis />,
-  },
-  {
-    path: "/add-product",
-    element: <AddProduct />
-  },
-  {
-    path: "/update-product/:id",
-    element: <UpdateProduct />
-  },
-  {
-    path: "/product-management",
-    element: <ProductManagement />
-  },
-  {
-    path: "/products/:id",
-    element:<DetilProductPage/>
-  },
-  {
-    path: "/galery",
-    element:<Galery/>
-  },
-  {
-    path: "/checkout/:id",
-    element: <CheckoutPage/>
-  },
-  {
-    path: "/checkout",
-    element: <CheckoutPage />,
-  },
-  {
-    path: "/orders",
-    element: <OrdersPage/>
-  },
-  {
-    path: "/orders/:id",
-    element: <OrderDetailPage/>
-  }
 ]);
 
 ReactDOM.createRoot(document.getElementById("root")).render(

@@ -3,16 +3,19 @@ import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { createOrder, createOrderItem, createPayment } from "../../services/paymentService";
 import { getDetilProduct } from "../../services/product.services";
-import NavbarHome from "../../components/layouts/NavbarHome";
 import useLogin from "../../hooks/useLogin";
+import { removeItemDB } from "../../services/cartService";
+import { removeItem } from "../../redux/slice/cartSlice";
+import { useDispatch } from "react-redux";
 
 const CheckoutPage = () => {
   
   const { id } = useParams(); // id produk
   const location = useLocation();
+  const dispatch = useDispatch();
 
   const navigate = useNavigate();
-  const [keranjang, setKeranjang] = useState(false);
+  // const [keranjang, setKeranjang] = useState(false);
   const [product, setProduct] = useState(null);
   const [estimasiSampai, setEstimasiSampai] = useState("");
   const [loading, setLoading] = useState(false);
@@ -106,6 +109,13 @@ const CheckoutPage = () => {
           amount: total,
           payment_proof_url: "https://dummyimage.com/bukti.jpg",
         });
+
+         // Setelah sukses, hapus semua item dari cart (redux dan database) 
+      for (const item of items) {
+        dispatch(removeItem({ id: item.id }));
+        await removeItemDB(item.id);
+      } 
+
       } else {
         alert("Tidak ada produk untuk dibayar.");
         return;
@@ -128,9 +138,7 @@ const CheckoutPage = () => {
   }
 
   return (
-    <>
-      <NavbarHome keranjang={keranjang} setKeranjang={setKeranjang}/>
-    <div className="pt-20 px-5 lg:px-20 py-10">
+    <div className="px-5 lg:px-20 py-10">
 
       <h1 className="text-2xl font-bold mb-5">Checkout Produk</h1>
 
@@ -166,7 +174,6 @@ const CheckoutPage = () => {
         </button>
       </div>
     </div>
-    </>
   );
 };
 

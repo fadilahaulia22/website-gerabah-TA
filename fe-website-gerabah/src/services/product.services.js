@@ -2,16 +2,15 @@ import axios from "axios";
 
 const API = "http://localhost:3000/api"; 
 
-export const getProducts = (callback) => {
-  axios.get(`${API}/products`)
-    .then(res => callback(res.data))
-    .catch(err => console.error(err));
+export const getProducts = () => {
+  return axios.get(`${API}/products`).then(res => res.data);
 };
 
-export const getDetilProduct = (id, callback) => {
-  axios.get(`${API}/products/${id}`)
-    .then(res => callback(res.data))
-    .catch(err => console.error(err));
+export const getDetilProduct = (id) => {
+  // axios.get(`${API}/products/${id}`)
+  //   .then(res => callback(res.data))
+  //   .catch(err => console.error(err));
+    return axios.get(`${API}/products/${id}`).then(res => res.data);
 };
 
 export const addProduct = (formData, callback) => {

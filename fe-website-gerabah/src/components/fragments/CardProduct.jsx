@@ -27,18 +27,22 @@ const Header = (props) => {
 }
 
 const Body = (props) => {
-    const {price,name,stock} = props;
+    const {price,name,stock,rating, totalRatings} = props;
     return (
         <div className="px-2 md:px-5 pb-2 md:pb-5">
             <a href="" className="flex items-center justify-between">
-                {/* <span className="text-xs md:text-sm text-gray-500 font-semibold tracking-tight">{category}</span> */}
                 <span className="text-xs md:text-sm text-black font-semibold tracking-tight">Rp {price}</span>
             </a>
             <p className="text-sm font-semibold tracking-tight text-black">{name}</p>
+
+                {/* {rating} | */}
             <span className="text-xs flex items-center gap-2">
                 <FaStar size={15} color="#f59e0b" />
-                {/* {rating} | */}
-                 {stock}</span>
+                        {rating ? `${Number(rating).toFixed(1)} (${totalRatings})` : "0"}
+                 </span>
+                 
+                 {/* Stock */}
+                <span className="text-xs text-gray-600">Stok: {stock}</span>
         </div>
     )
 }

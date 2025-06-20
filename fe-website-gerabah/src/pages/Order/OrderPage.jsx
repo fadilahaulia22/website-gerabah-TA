@@ -1,18 +1,21 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import NavbarHome from "../../components/layouts/NavbarHome";
 import {getOrderItemsByOrderId, getOrdersByUserId } from "../../services/paymentService";
+import { addReview, getReviewsByUser, updateReview } from "../../services/reviewService";
 
 const OrdersPage = () => {
   const [ordersWithItems, setOrdersWithItems] = useState([]);
-  const [keranjang, setKeranjang] = useState(false);
+  // const [keranjang, setKeranjang] = useState(false);
   const [showRating, setShowRating] = useState(null); 
   const [selectedRating, setSelectedRating] = useState(0);
   const [comment, setComment] = useState("");
+  const [reviews, setReviews] = useState([]); 
+  const [editReviewId, setEditReviewId] = useState(null);
 
 
   const navigate = useNavigate();
   const userId = localStorage.getItem("user_id");
+  const token = localStorage.getItem("token");
 
   console.log("user id : ",userId)
   useEffect(() => {
@@ -35,26 +38,63 @@ const OrdersPage = () => {
       }
     };
 
-    if (userId) fetchOrders();
-  }, [userId]);
+
+    const fetchReviews = async () => {
+      try {
+        const data = await getReviewsByUser(token);
+        setReviews(data);
+      } catch (err) {
+        console.error(err.message);
+      }
+    };
+
+    fetchOrders();
+    fetchReviews();
+  }, [userId, token]);
+
+
+   const fetchUserReviews = async () => {
+    try {
+      const data = await getReviewsByUser(token);
+      setReviews(data);
+    } catch (err) {
+      console.error("Gagal refresh review:", err.message);
+    }
+  };
 
   if (!userId) {
     return <div className="text-center py-20 text-red-500 font-bold">Anda belum login.</div>;
   }
 
-  const handleSubmitRating = (productId) => {
-    console.log("Rating submitted:", {
+  const handleSubmitRating = async (productId) => {
+  try {
+    const token = localStorage.getItem("token");
+    const payload = {
       product_id: productId,
       rating: selectedRating,
       comment,
-    });
+    };
 
-    // TODO: Kirim ke backend dengan fetch/post
-    // reset state
-    setShowRating(null);
-    setSelectedRating(0);
-    setComment("");
-  };
+    if (editReviewId) {
+      await updateReview(editReviewId, payload, token);
+      alert("Review diperbarui!");
+    } else {
+      await addReview(payload, token);
+      alert("Review berhasil ditambahkan!");
+    }
+
+    // Reset
+      setShowRating(null);
+      setSelectedRating(0);
+      setComment("");
+      setEditReviewId(null);
+    
+      fetchUserReviews(); // refresh review
+  } catch (err) {
+    alert("Gagal mengirim review.");
+    console.log("error :", err);
+  }
+};
 
   const handleBuyAgain = (productId) => {
     // Bisa langsung arahkan ke detail produk
@@ -62,10 +102,7 @@ const OrdersPage = () => {
   };
 
   return (
-    <>
-    
-    <NavbarHome keranjang={keranjang} setKeranjang={setKeranjang} />
-    <div className="pt-20 px-5 lg:px-20 py-10">
+    <div className="px-5 lg:px-20 py-10">
       <h1 className="text-2xl font-bold mb-6">Daftar Pesanan Anda</h1>
 
       {ordersWithItems.length === 0 ? (
@@ -89,8 +126,9 @@ const OrdersPage = () => {
                 </span>
               </div>
 
-              {order.items.map((item) => (
-                // <div key={item.id} className="flex items-center gap-4 mb-4">
+              {order.items.map((item) => {
+                const existing = reviews.find(r => r.product_id === item.product_id);
+                return (
                 <div key={item.id} className="flex flex-col gap-3 mb-6">
                   <div className="flex items-center gap-4">
                 <img
@@ -117,18 +155,32 @@ const OrdersPage = () => {
 
                 <div className="flex gap-3 mt-2">
                     <button
-                      onClick={() => setShowRating(item.product_id)}
-                      className="text-sm px-3 py-1 bg-yellow-200 rounded hover:bg-yellow-300"
-                    >
-                      Nilai
-                    </button>
+                          onClick={() => {
+                            setShowRating(item.product_id);
+                            if (existing) {
+                              setSelectedRating(existing.rating);
+                              setComment(existing.comment);
+                              setEditReviewId(existing.id);
+                            } else {
+                              setSelectedRating(0);
+                              setComment("");
+                              setEditReviewId(null);
+                            }
+                          }}
+                          className={`text-sm px-3 py-1 rounded ${
+                            existing ? "bg-orange-200 hover:bg-orange-300" : "bg-yellow-200 hover:bg-yellow-300"
+                          }`}
+                        >
+                          {existing ? "Edit Review" : "Nilai"}
+                        </button>
+
                     <button
                       onClick={() => handleBuyAgain(item.product_id)}
                       className="text-sm px-3 py-1 bg-blue-200 rounded hover:bg-blue-300"
                     >
                       Beli Lagi
                     </button>
-                  </div>
+                </div>
 
                   {showRating === item.product_id && (
                     <div className="mt-3 border-t pt-3">
@@ -168,7 +220,8 @@ const OrdersPage = () => {
                     </div>
                   )}
                 </div>
-              ))}
+                );
+              })}
         
 
               <button
@@ -182,7 +235,6 @@ const OrdersPage = () => {
         </div>
       )}
     </div>
-    </>
   );
 };
 

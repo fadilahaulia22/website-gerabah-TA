@@ -1,14 +1,13 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { getOrderById, getOrderItemsByOrderId } from "../../services/paymentService";
-import NavbarHome from "../../components/layouts/NavbarHome";
 
 
 const OrderDetailPage = () => {
   const { id } = useParams();
   const [order, setOrder] = useState(null);
   const [items, setItems] = useState([]);
-  const [keranjang, setKeranjang] = useState(false);
+  // const [keranjang, setKeranjang] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -32,9 +31,7 @@ const OrderDetailPage = () => {
   }
 
   return (
-    <>
-      <NavbarHome keranjang={keranjang} setKeranjang={setKeranjang} />
-    <div className="pt-20 px-5 lg:px-20 py-10 bg-gray-50 min-h-screen">
+    <div className="px-5 lg:px-20 py-10 bg-gray-50 min-h-screen">
 
       <div className="max-w-5xl mx-auto">
         <h1 className="text-3xl font-bold text-gray-800 mb-6">
@@ -133,7 +130,6 @@ const OrderDetailPage = () => {
         </div>
       </div>
     </div>
-    </>
   );
 };
 

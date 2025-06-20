@@ -3,17 +3,14 @@ import { getCategories, getProducts } from "../services/product.services";
 import useLogin from "../hooks/useLogin";
 import hero from "../assets/banner gerabah.jpg"
 import Footer from "./footer";
-import Cart from "../components/Fragments/Cart";
 import SkeletonCard from "../components/Fragments/SkeletonCard";
 import animate from "../assets/empty.gif"
 import { CiSearch } from "react-icons/ci";
 import CardProduct from "../components/fragments/CardProduct";
-import NavbarHome from "../components/layouts/NavbarHome";
+import CustomOrderForm from "../components/elements/CustomProduct";
 
 const Product = () => {
     
-    // useState
-    const [keranjang, setKeranjang] = useState(false);
     const [product, setProduct] = useState([]);
     const [loading, setLoading] = useState(true);
     const [category, setCategory] = useState("");
@@ -22,16 +19,25 @@ const Product = () => {
     const [openSearch, setOpenSearch] = useState(false);
 
     const [openCustom, setOpenCustom] = useState(false);
-    const [customDesc, setCustomDesc] = useState("");
-    const [customImage, setCustomImage] = useState(null);
+
     useLogin();
 
     useEffect(()=>{
-        getProducts(data => {
-            setProduct(data);
-            console.log(data)
-            setLoading(false);
+        // getProducts(data => {
+        //     setProduct(data);
+        //     console.log(data)
+        //     setLoading(false);
+        // });
+         getProducts()
+        .then((data) => {
+        setProduct(data);
+        setLoading(false);
+        })
+        .catch((err) => {
+        console.error("Gagal mengambil produk:", err);
+        setLoading(false);
         });
+
         getCategories((data) => {
             setFilterCategory(data)
         })
@@ -47,8 +53,7 @@ const Product = () => {
     return(
         <div className="font-primary">
 
-             <NavbarHome keranjang={keranjang} setKeranjang={setKeranjang}/>
-             <img className="w-full mt-[100px] h-[500px] bg-cover object-cover bg-center mx-auto "
+             <img className="w-full h-[500px] bg-cover object-cover bg-center mx-auto "
                 src={hero} alt="banner" />
 
                       {/* SEARCH       */}
@@ -136,6 +141,8 @@ const Product = () => {
                                      price={products.price} 
                                     //  category={product.category}  
                                      stock={products.stock}
+                                     rating={products.average_rating}
+                                     totalRatings={products.total_reviews}
                                       />
                                      <CardProduct.Footer id={products.id}/>
                                  </CardProduct>
@@ -144,91 +151,19 @@ const Product = () => {
                                  </div>
                         )}
                      </div>
-                     {/* keranjang */}
-                     {keranjang && (
-                        <div className="fixed z-[999] top-0 right-0">
-                             <Cart products={product} setKeranjang={setKeranjang}/>
-                         </div>
-                    )}
                  </div>
 
-                 {openCustom && (
-  <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[999]">
-    <div className="bg-white p-6 rounded-lg w-[90%] md:w-[500px]">
-      <h2 className="text-xl font-bold mb-4">Pesanan Custom</h2>
-      <label className="block mb-2 font-semibold">Deskripsi Permintaan:</label>
-      <textarea
-        className="w-full border border-gray-300 rounded-lg p-2 mb-4"
-        rows="4"
-        value={customDesc}
-        onChange={(e) => setCustomDesc(e.target.value)}
-        placeholder="Contoh: Saya ingin pot dengan ukiran nama 'Dina'."
-      />
-
-      <label className="block mb-2 font-semibold">Unggah Gambar Referensi:</label>
-      <input
-        type="file"
-        accept="image/*"
-        onChange={(e) => setCustomImage(e.target.files[0])}
-        className="mb-4"
-      />
-
-      <div className="flex justify-end gap-3">
-        <button
-          onClick={() => setOpenCustom(false)}
-          className="px-4 py-2 bg-gray-400 text-white rounded hover:bg-gray-500"
-        >
-          Batal
-        </button>
-        <button
-          onClick={async () => {
-            // Logika upload (bisa disesuaikan)
-            if (!customDesc || !customImage) {
-              alert("Harap isi deskripsi dan unggah gambar.");
-              return;
-            }
-
-            const formData = new FormData();
-            formData.append("description", customDesc);
-            formData.append("image", customImage);
-
-            try {
-              const res = await fetch("http://localhost:3000/api/custom-orders", {
-                method: "POST",
-                body: formData,
-              });
-
-              if (res.ok) {
-                alert("Pesanan custom berhasil dikirim!");
-                setOpenCustom(false);
-                setCustomDesc("");
-                setCustomImage(null);
-              } else {
-                alert("Gagal mengirim pesanan custom.");
-              }
-            } catch (error) {
-              console.error("Error kirim custom:", error);
-              alert("Terjadi kesalahan.");
-            }
-          }}
-          className="px-4 py-2 bg-orange-600 text-white rounded hover:bg-orange-700"
-        >
-          Kirim Pesanan
-        </button>
-      </div>
-    </div>
-  </div>
-)}
 
              </div>
+              <CustomOrderForm isOpen={openCustom} onClose={() => setOpenCustom(false)} />
 
                  <Footer/>
                  <button
-  onClick={() => setOpenCustom(true)}
-  className="fixed bottom-10 right-10 bg-orange-600 text-white px-5 py-3 rounded-full shadow-lg hover:bg-orange-700 z-50"
->
-  Pesan Custom Produk
-</button>
+                  onClick={() => setOpenCustom(true)}
+                  className="fixed bottom-10 right-10 bg-orange-600 text-white px-5 py-3 rounded-full shadow-lg hover:bg-orange-700 z-50"
+                >
+                  Pesan Custom Produk
+                </button>
 
      </div>
     )

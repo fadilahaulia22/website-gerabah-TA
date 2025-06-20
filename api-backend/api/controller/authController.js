@@ -24,7 +24,7 @@ export const login = async (req, res) => {
               res.status(401).json({ error: "Kata sandi salah" });
             }
         } else {
-          res.status(404).send(`user dengan nama ${req.body.username} tidak ditemukan.`);
+          res.status(404).json({ error: `User dengan nama ${req.body.username} tidak ditemukan.` });
         }
       } catch (err) {
         console.error("Login error:", err);

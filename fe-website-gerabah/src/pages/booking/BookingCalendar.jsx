@@ -3,8 +3,6 @@ import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
 import { FaCheckCircle } from 'react-icons/fa';
 import { createVisit } from '../../services/bookingService';
-import NavbarHome from '../../components/layouts/NavbarHome';
-
 const BookingCalendar = () => {
   const [bookedDates, setBookedDates] = useState([]);
   const [selectedDate, setSelectedDate] = useState(null);
@@ -17,11 +15,21 @@ const BookingCalendar = () => {
     jumlahOrang: '',
     jamKunjungan: '',
   });
+  const [isLoading, setIsLoading] = useState(false);
 
-  const isSameDay = (date1, date2) =>
-    date1.getFullYear() === date2.getFullYear() &&
-    date1.getMonth() === date2.getMonth() &&
-    date1.getDate() === date2.getDate();
+  const isSameDay = (a, b) => {
+    const date1 = a instanceof Date ? a : a?.date;
+    const date2 = b instanceof Date ? b : b?.date;
+
+    if (!(date1 instanceof Date) || !(date2 instanceof Date)) return false;
+
+    return (
+      date1.getFullYear() === date2.getFullYear() &&
+      date1.getMonth() === date2.getMonth() &&
+      date1.getDate() === date2.getDate()
+    );
+  };
+
 
   const tileClassName = ({ date, view }) => {
     if (view === 'month') {
@@ -32,16 +40,7 @@ const BookingCalendar = () => {
     return null;
   };
 
-  // const handleDateClick = (date) => {
-  //   if (bookedDates.some((d) => isSameDay(d, date))) {
-  //     alert('Tanggal ini sudah dibooking.');
-  //   } else {
-  //     setSelectedDate(date);
-  //     setShowPayment(false);
-  //     setPaymentSuccess(false);
-  //     resetFormData();
-  //   }
-  // };
+
 const isPastDateTime = (date, time) => {
   const selectedDateTime = new Date(date);
   const [hours, minutes] = time.split(":");
@@ -57,7 +56,7 @@ const isAtLeastTwoDaysAhead = (date) => {
 };
 
 const getBookingCountOnDate = (date) => {
-  return bookedDates.filter((d) => isSameDay(d.date, date)).length;
+  return bookedDates.filter((d) => isSameDay(d, date)).length;
 };
 
 const isTimeSlotTaken = (date, time) => {
@@ -103,39 +102,10 @@ const isTimeSlotTaken = (date, time) => {
     setShowPayment(true);
   };
 
-  // const handlePayment = () => {
-  //   if (!selectedDate) return;
-
-  //   const payload = {
-  //     visit_date: selectedDate.toISOString().split("T")[0],
-  //     visit_time: formData.jamKunjungan,
-  //     jumlah_orang: formData.jumlahOrang,
-  //     nama: formData.nama,
-  //     email: formData.email,
-  //     no_hp: formData.noHp,
-  //   };
-
-  //   createVisit(
-  //     payload,
-  //     (res) => {
-  //       console.log("Booking berhasil:", res.visit);
-  //       alert(res.message);
-
-  //       setBookedDates([...bookedDates, selectedDate]);
-  //       setPaymentSuccess(true);
-  //       setSelectedDate(null);
-  //       setShowPayment(false);
-  //     },
-  //     (err) => {
-  //       alert("Gagal booking, coba lagi.");
-  //       console.log(err);
-  //     }
-  //   );
-  // };
-
 
   const handlePayment = () => {
   if (!selectedDate) return;
+    setIsLoading(true);
 
   const { jamKunjungan } = formData;
 
@@ -156,7 +126,7 @@ const isTimeSlotTaken = (date, time) => {
 
   const payload = {
     visit_date: selectedDate.toISOString().split("T")[0],
-    visit_time: jamKunjungan,
+    visit_time: formData.jamKunjungan,
     jumlah_orang: formData.jumlahOrang,
     nama: formData.nama,
     email: formData.email,
@@ -166,20 +136,31 @@ const isTimeSlotTaken = (date, time) => {
   createVisit(
     payload,
     (res) => {
-      console.log("Booking berhasil:", res.visit);
+        setIsLoading(false); // selesai
+
+      if (!res || !res.visit) {
+        alert("Gagal booking: Respons tidak valid.");
+        return;
+      }
+
       alert(res.message);
 
-      setBookedDates([...bookedDates, { date: selectedDate, time: jamKunjungan }]);
+      setBookedDates((prev) => [
+        ...prev,
+        { date: selectedDate, time: jamKunjungan },
+      ]);
       setPaymentSuccess(true);
       setSelectedDate(null);
       setShowPayment(false);
     },
     (err) => {
-      alert("Gagal booking, coba lagi.");
-      console.log(err);
+        setIsLoading(false); // jika error pun matikan loading
+      const msg = err?.response?.data?.error || "Gagal booking, coba lagi.";
+      alert(msg);
+      console.error("Error booking:", err);
     }
   );
-};
+  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -187,10 +168,7 @@ const isTimeSlotTaken = (date, time) => {
   };
 
   return (
-    <>
-      <NavbarHome />
-
-      <div className="min-h-screen bg-[#FFF7F0] pt-24 px-4 sm:px-8">
+      <div className="min-h-screen bg-[#FFF7F0] pt-18 px-4 sm:px-8">
         <div className="max-w-3xl mx-auto bg-white shadow-lg rounded-xl p-8">
           <h2 className="text-3xl font-bold text-orange-600 text-center mb-8 tracking-wide">
             Booking Kunjungan Edukasi
@@ -265,8 +243,9 @@ const isTimeSlotTaken = (date, time) => {
                   <button
                     onClick={handlePayment}
                     className="bg-green-500 hover:bg-green-600 text-white px-6 py-2 rounded-md transition duration-200"
+                    disabled={isLoading}
                   >
-                    Bayar & Konfirmasi
+                      {isLoading ? "Memproses..." : "Bayar & Konfirmasi"}
                   </button>
                 </div>
               )}
@@ -302,7 +281,6 @@ const isTimeSlotTaken = (date, time) => {
           )}
         </div>
       </div>
-    </>
   );
 };
 

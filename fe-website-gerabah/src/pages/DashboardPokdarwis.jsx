@@ -1,97 +1,90 @@
 import { useEffect, useState } from "react";
-
-const dummyKunjungan = [
-  {
-    id: 1,
-    namaPengunjung: "Ahmad Fauzi",
-    tanggal: "2025-05-12",
-    asal: "Bandung",
-    jumlahOrang: 4,
-    totalBayar: 400000, // asumsi
-  },
-  {
-    id: 2,
-    namaPengunjung: "Rina Aprilia",
-    tanggal: "2025-05-13",
-    asal: "Jakarta",
-    jumlahOrang: 2,
-    totalBayar: 200000,
-  },
-];
+import { fetchStaffProfitShare, fetchStaffVisits } from "../services/pokdarwis";
+import { useNavigate } from "react-router";
+import { isPokdarwis } from "../utils/auth.utils";
 
 const DashboardPokdarwis = () => {
   const [kunjungan, setKunjungan] = useState([]);
-  const [kunjunganHariIni, setKunjunganHariIni] = useState([]);
+  const [bagiHasil, setBagiHasil] = useState([]);
+    const navigate = useNavigate();
 
   useEffect(() => {
-    // Simulasikan fetch data dari backend
-    setKunjungan(dummyKunjungan);
+  if (!isPokdarwis()) {
+    navigate("/");
+    return;
+  }
+  fetchData();
+}, []);
 
-    const today = new Date().toISOString().split("T")[0];
-    const todayBookings = dummyKunjungan.filter((k) => k.tanggal === today);
-    setKunjunganHariIni(todayBookings);
-  }, []);
+  const fetchData = async () => {
+     try {
+    const kunjungan = await fetchStaffVisits();
+    setKunjungan(kunjungan);
 
-  const hitungKomisi = (total) => {
-    const komisiPokdarwis = (total * 0.3) / 2;
-    return komisiPokdarwis;
+    const bagiHasil = await fetchStaffProfitShare();
+    setBagiHasil(bagiHasil);
+  } catch (err) {
+    console.error("Gagal fetch data dashboard pegawai:", err);
+  }
   };
 
   return (
-    <div className="p-8">
-      <h1 className="text-3xl font-bold mb-6">Dashboard Pokdarwis</h1>
+    <div className="p-6 max-w-5xl mx-auto">
+      <h1 className="text-3xl font-bold text-orange-600 mb-6">Dashboard Pegawai</h1>
 
-      {/* Notifikasi Kunjungan Hari Ini */}
-      {kunjunganHariIni.length > 0 && (
-        <div className="mb-6 p-4 bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 rounded">
-          <h2 className="font-semibold mb-2">📣 Notifikasi Hari Ini</h2>
-          {kunjunganHariIni.map((k) => (
-            <p key={k.id}>
-              Hari ini ({k.tanggal}) ada kunjungan dari{" "}
-              <span className="font-semibold">{k.namaPengunjung}</span> sebanyak{" "}
-              <span className="font-semibold">{k.jumlahOrang}</span> orang. Siapkan untuk memandu acara study wisata gerabah.
-            </p>
-          ))}
-        </div>
-      )}
-
-      {/* Daftar Kunjungan */}
-      <div className="mb-6">
-        <h2 className="text-xl font-semibold mb-3">Daftar Kunjungan</h2>
+      <section className="mb-10">
+        <h2 className="text-xl font-semibold mb-2">Riwayat Kunjungan</h2>
         <div className="overflow-x-auto">
-          <table className="min-w-full bg-white shadow rounded-lg">
-            <thead>
-              <tr className="bg-gray-200 text-gray-700 text-left">
-                <th className="py-3 px-4">Nama</th>
-                <th className="py-3 px-4">Tanggal</th>
-                <th className="py-3 px-4">Jumlah Orang</th>
-                <th className="py-3 px-4">Total Bayar</th>
-                <th className="py-3 px-4">Komisi Anda (30% ÷ 2)</th>
+          <table className="min-w-full border text-sm">
+            <thead className="bg-orange-100">
+              <tr>
+                <th className="border px-3 py-2">Tanggal</th>
+                <th className="border px-3 py-2">Jam</th>
+                <th className="border px-3 py-2">Pengunjung</th>
+                <th className="border px-3 py-2">Jumlah</th>
+                <th className="border px-3 py-2">Status</th>
               </tr>
             </thead>
             <tbody>
-              {kunjungan.map((k) => (
-                <tr key={k.id} className="border-t">
-                  <td className="py-2 px-4">{k.namaPengunjung}</td>
-                  <td className="py-2 px-4">{k.tanggal}</td>
-                  <td className="py-2 px-4">{k.jumlahOrang}</td>
-                  <td className="py-2 px-4">Rp {k.totalBayar.toLocaleString()}</td>
-                  <td className="py-2 px-4 text-green-600 font-semibold">
-                    Rp {hitungKomisi(k.totalBayar).toLocaleString()}
+              {kunjungan.map((v) => (
+                <tr key={v.id}>
+                  <td className="border px-3 py-1">{v.visit_date}</td>
+                  <td className="border px-3 py-1">{v.visit_time}</td>
+                  <td className="border px-3 py-1">{v.pengunjung || "-"}</td>
+                  <td className="border px-3 py-1">{v.price / 20000} orang</td>
+                  <td className="border px-3 py-1">
+                    <span className={`px-2 py-1 rounded text-white ${v.payment_status === "sudah_bayar" ? "bg-green-500" : "bg-yellow-500"}`}>
+                      {v.payment_status}
+                    </span>
                   </td>
                 </tr>
               ))}
-              {kunjungan.length === 0 && (
-                <tr>
-                  <td colSpan="5" className="text-center py-4 text-gray-500">
-                    Belum ada kunjungan.
-                  </td>
-                </tr>
-              )}
             </tbody>
           </table>
         </div>
-      </div>
+      </section>
+
+      <section>
+        <h2 className="text-xl font-semibold mb-2">Bagi Hasil Bulanan</h2>
+        <div className="overflow-x-auto">
+          <table className="min-w-full border text-sm">
+            <thead className="bg-green-100">
+              <tr>
+                <th className="border px-3 py-2">Bulan</th>
+                <th className="border px-3 py-2">Total Share (Rp)</th>
+              </tr>
+            </thead>
+            <tbody>
+              {bagiHasil.map((b, idx) => (
+                <tr key={idx}>
+                  <td className="border px-3 py-1">{b.bulan}</td>
+                  <td className="border px-3 py-1">Rp {parseInt(b.total_share).toLocaleString()}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </section>
     </div>
   );
 };

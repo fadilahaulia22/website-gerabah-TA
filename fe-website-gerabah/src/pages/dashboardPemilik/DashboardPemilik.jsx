@@ -5,6 +5,8 @@ import {
   PieChart, Pie, Cell
 } from "recharts";
 import { getProducts } from "../../services/product.services";
+import { getJumlahCustomOrder } from "../../services/orderCustomService";
+import { isPemilik } from "../../utils/auth.utils";
 
 const DashboardPemilik = () => {
   const navigate = useNavigate();
@@ -21,6 +23,10 @@ const DashboardPemilik = () => {
   const [kunjunganMingguan, setKunjunganMingguan] = useState([]);
 
   useEffect(() => {
+    if (!isPemilik()) {
+      navigate("/"); // Redirect ke halaman utama jika bukan pemilik
+      return;
+    }
     document.title = "Dashboard Pemilik";
 
     getProducts((dataProduct) => {
@@ -30,10 +36,16 @@ const DashboardPemilik = () => {
       produk: dataProduct.length,
       kunjungan: 45,
       stokHabis: dataProduct.filter(p => p.stock === 0).length,
-      customOrders: 12,
       pembelianPengrajin: 8,
     }));
     });
+
+    getJumlahCustomOrder((jumlah) => {
+    setStatistik(prev => ({
+      ...prev,
+      customOrders: jumlah
+    }));
+  });
 
     setPenjualanHarian([
       { tanggal: "10/05", total: 5 },

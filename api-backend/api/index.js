@@ -15,6 +15,8 @@ import orderRoutes from "./routes/orderRoutes.js";
 import paymentRoutes from "./routes/paymentRoutes.js";
 import orderItemRoutes from "./routes/orderItemRoutes.js";
 import reviewRoutes from "./routes/reviewRoutes.js";
+import orderCustomRoutes from "./routes/orderCustomRoutes.js";
+import pokdarwisDashboardRoutes from "./routes/pokdarwisDashboardRoutes.js";
 
 dotenv.config();
 
@@ -40,11 +42,13 @@ app.use("/api", authRoutes);
 app.use("/api/products/categories", categoryRoutes);
 app.use("/api/products", productRoutes);
 app.use("/api/visits", visitRoutes);
+app.use("/api/pokdarwis",pokdarwisDashboardRoutes);
 app.use("/api/cart", cartRoutes); 
 app.use("/api/orders", orderRoutes);
+app.use("/api/custom",orderCustomRoutes)
 app.use("/api/payments", paymentRoutes);
 app.use("/api/order-items", orderItemRoutes);
-app.use("/api", reviewRoutes);
+app.use("/api/review", reviewRoutes);
 
 
 

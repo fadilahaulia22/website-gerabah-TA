@@ -1,11 +1,18 @@
+import gerabah1 from '../assets/gambar1.webp';
+import gerabah2 from '../assets/gerabah2.webp';
+import gerabah3 from '../assets/gerabah3.webp';
+import gerabah4 from '../assets/gerabah4.webp';
+import gerabah5 from '../assets/gerabah5.webp';
+import gerabah6 from '../assets/gerabah6.webp';
 
 const galleryImages = [
-  { id: 1, src: '../assets/gerabah1.jpg', alt: 'Gerabah 1' },
-  { id: 2, src: '/images/gerabah2.jpg', alt: 'Gerabah 2' },
-  { id: 3, src: '/images/gerabah3.jpg', alt: 'Gerabah 3' },
-  { id: 4, src: '/images/gerabah4.jpg', alt: 'Gerabah 4' },
-  { id: 5, src: '/images/gerabah5.jpg', alt: 'Gerabah 5' },
-  { id: 6, src: '/images/gerabah6.jpg', alt: 'Gerabah 6' },
+  { id: 1, src: gerabah1, alt: 'Gerabah 1' },
+  { id: 2, src: gerabah2, alt: 'Gerabah 2' },
+  { id: 3, src: gerabah3, alt: 'Gerabah 3' },
+  { id: 4, src: gerabah4, alt: 'Gerabah 4' },
+  { id: 5, src: gerabah5, alt: 'Gerabah 5' },
+  { id: 6, src: gerabah6, alt: 'Gerabah 6' },
+
 ];
 
 const Galery = () => {

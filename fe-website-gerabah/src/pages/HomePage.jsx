@@ -1,6 +1,5 @@
 import { useNavigate } from "react-router-dom";
 import Footer from "./footer";
-import NavbarHome from "../components/layouts/NavbarHome";
 
 const HomePage = () => {
   const navigate = useNavigate();
@@ -8,10 +7,7 @@ const HomePage = () => {
 
   return (
     <>
-    <NavbarHome/>
-
-
-    <div className="min-h-screen bg-gradient-to-br from-orange-50 to-white pt-20">
+    <div className="min-h-screen bg-gradient-to-br from-orange-50 to-white">
       <main className="max-w-7xl mx-auto px-6 py-12">
         <section className="text-center mb-12">
           <h2 className="text-4xl font-bold text-gray-800 mb-4">Selamat Datang di Oemah Gerabah</h2>
@@ -47,8 +43,8 @@ const HomePage = () => {
     </div>
 
       <Footer/>
-    </>
-  );
+</>
+  )
 };
 
 export default HomePage;

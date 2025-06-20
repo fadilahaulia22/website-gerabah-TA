@@ -11,8 +11,9 @@ import {
 import "react-toastify/dist/ReactToastify.css";
 import { removeItemDB, updateCartItemDB } from "../../services/cartService";
 import { useNavigate } from "react-router";
+import { toggleCart } from "../../redux/slice/uiSlice";
 
-const Cart = ({ products, setKeranjang }) => {
+const Cart = ({ products }) => {
   const cart = useSelector((state) => state.cart.data);
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -33,15 +34,6 @@ const Cart = ({ products, setKeranjang }) => {
     }
   }, [cart, products]);
 
-  // Total hanya item yang dipilih
-  // useEffect(() => {
-  //   const sum = selectedItems.reduce((acc, id) => {
-  //     const item = cart.find((i) => i.id === id);
-  //     const product = products.find((p) => p.id === id);
-  //     return acc + (product && item ? product.price * item.qty : 0);
-  //   }, 0);
-  //   setSelectedTotal(sum);
-  // }, [selectedItems, cart, products]);
 
   useEffect(() => {
   if (selectedItems.length === 0) {
@@ -122,7 +114,7 @@ const Cart = ({ products, setKeranjang }) => {
       {/* Header */}
       <div className="flex items-center justify-between p-4 border-b">
         <h1 className="text-lg font-semibold">Shopping Cart</h1>
-        <button onClick={() => setKeranjang(false)}>
+        <button onClick={() => dispatch(toggleCart())}>
           <IoClose size={24} />
         </button>
       </div>

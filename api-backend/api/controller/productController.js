@@ -43,9 +43,15 @@ export const getAllProducts = async(req, res) => {
   try {
     const result = await pool.query(`SELECT 
     p.*, 
-    c.name AS category_name 
+    c.name AS category_name,
+    COALESCE(AVG(r.rating), 0) AS average_rating,
+    COUNT(r.rating) AS total_reviews
+
   FROM products p 
-  LEFT JOIN categories c ON p.category_id = c.id`);
+  LEFT JOIN categories c ON p.category_id = c.id
+  LEFT JOIN product_reviews r ON r.product_id = p.id
+  GROUP BY p.id, c.name
+  ORDER BY p.id ASC`);
     res.json(result.rows);
   } catch (err) {
     res.status(500).json({ error: "Gagal mengambil produk" });
@@ -67,8 +73,31 @@ export const getProductById  = async (req, res) => {
     if (result.rows.length === 0) {
       return res.status(404).json({ error: "Produk tidak ditemukan" });
     }
-    res.json(result.rows[0]); 
+
+    const product = result.rows[0];
+
+     const reviewResult = await pool.query(
+      `SELECT r.rating, r.comment, r.created_at, u.username
+       FROM product_reviews r
+       LEFT JOIN users u ON r.user_id = u.id
+       WHERE r.product_id = $1
+       ORDER BY r.created_at DESC`,
+      [id]
+    );
+
+    const ratings = reviewResult.rows.map(r => r.rating);
+    const avgRating = ratings.length ? (ratings.reduce((a, b) => a + b, 0) / ratings.length).toFixed(1) : null;
+
+    return res.json({
+      ...product,
+      reviews: reviewResult.rows,
+      rating: avgRating,
+      total_ratings: ratings.length
+    });
+
+    // res.json(result.rows[0]); 
   } catch (err) {
+    console.error("Gagal mengambil produk:", err);
     res.status(500).json({ error: "Gagal mengambil produk" });
   }
 }

@@ -7,6 +7,7 @@ import { fetchCart } from "../../services/cartService";
 import { resetCart, setCart } from "../../redux/slice/cartSlice";
 import { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { toggleCart } from "../../redux/slice/uiSlice";
 
 
 const DropdownMenu = ({ onLogout }) => {
@@ -29,21 +30,24 @@ const DropdownMenu = ({ onLogout }) => {
   );
 };
 
-const NavbarHome = ({ keranjang, setKeranjang }) => {
+const NavbarHome = () => {
   const cart = useSelector((state) => state.cart.data);
-  const [totalCart, setTotalCart] = useState(0);
 
   const [showDropdown, setShowDropdown] = useState(false);
   const dropdownRef = useRef();
 
   const username = useLogin();
   const dispatch = useDispatch();
+  const totalCart = cart.reduce((acc, item) => acc + item.qty, 0);
 
-  useEffect(() => {
-    const sum = cart.reduce((acc, item) => acc + item.qty, 0);
-    setTotalCart(sum);
-  }, [cart]);
+  // useEffect(() => {
+  //   const sum = cart.reduce((acc, item) => acc + item.qty, 0);
+  //   setTotalCart(sum);
+  // }, [cart]);
 
+    const handleCartClick = () => {
+        dispatch(toggleCart());
+      };
 
   useEffect(() => {
   if (username) {
@@ -104,7 +108,7 @@ const NavbarHome = ({ keranjang, setKeranjang }) => {
         {/* Right section */}
         <div className="flex gap-4 items-center">
           {/* Cart */}
-          <div className="relative cursor-pointer" onClick={() => setKeranjang(!keranjang)}>
+          <div className="relative cursor-pointer" onClick={handleCartClick}>
             <FaBagShopping size={24} className="text-gray-800" />
             {totalCart > 0 && (
               <span className="absolute -top-2 -right-2 bg-red-600 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
@@ -129,9 +133,6 @@ const NavbarHome = ({ keranjang, setKeranjang }) => {
                   {showDropdown && <DropdownMenu onLogout={handleLogout} />}
               </div>
               </div>
-              {/* <Button classname="bg-red-600 text-white text-sm px-3 py-1" onClick={handleLogout}>
-                Logout
-              </Button> */}
             </div>
           ) : (
             <div className="flex gap-3">
